@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Arquivos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #594ef8;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #C7FF42;
+            color: black;
+            padding: 15px 20px;
+            text-align: center;
+        }
+        nav {
+            background-color: #C7FF42;
+            margin: 20px 0;
+        }
+        nav a {
+            color: #000000;
+            text-decoration: none;
+            padding: 14px 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+        nav a:hover {
+            border-radius: 15px;
+            background-color: #D0D0D0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background: #f2f2f2;
+        }
+        .btn {
+            padding: 5px 10px;
+            color: #fff;
+            background: #28a745;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .search {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Bem-vindo ao Sistema de Arquivos</h1>
+    </header>
+    <nav>
+        <a href="{{ url_for('upload_file') }}">Fazer Upload</a>
+        <a href="{{ url_for('file_list') }}">Lista de Arquivos</a>
+        <a href="{{ url_for('change_password') }}" class="change-password-button">Trocar Senha</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+    <div class="container">
+        <h2>Lista de Arquivos</h2>
+        <form class="search" action="{{ url_for('file_list') }}" method="get">
+            <input type="text" name="search" placeholder="Pesquisar descrição" required>
+            <button type="submit" class="btn">Pesquisar</button>
+        </form>
+        <table>
+            <tr>
+                <th>Nome do Arquivo</th>
+                <th>Descrição</th>
+                <th>Data do Upload</th>
+                <th>Ação</th>
+            </tr>
+            {% for file in files %}
+            <tr>
+                <td>{{ file.filename }}</td>
+                <td>{{ file.description }}</td>
+                <td>{{ file.upload_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                    <form action="{{ url_for('delete_file', file_id=file.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    </form>
+                    <a href="{{ url_for('uploaded_file', file_id=file.id) }}" class="btn">Baixar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="{{ url_for('dashboard') }}" class="btn">Voltar ao Painel</a>
+    </div>
+</body>
+</html>

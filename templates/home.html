@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DropSlim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #D0D0D0; /* Fundo cinza claro */
+            margin: 0;
+            padding: 0;
+            color: #594EF8; /* Purple */
+        }
+
+        /* Header */
+        header {
+            background: #fff; /* Verde padrão */
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header img {
+            max-width: 150px;
+        }
+
+        /* Navigation Bar */
+        nav {
+            width: 200px;
+            background: #C7FF42; /* Verde limão */
+            color: #000000; /* Texto preto */
+            height: calc(100vh - 50px); /* Altura total menos a altura do cabeçalho */
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 200px;
+            height: calc(100vh - 60px);
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            display: block;
+            padding: 10px 15px;
+            color: #000000; /* Texto preto */
+            text-decoration: none;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background: fff; /* Verde mais escuro ao passar o mouse */
+        }
+
+        nav a i {
+            margin-right: 10px;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 75px;
+            margin-left: 220px; /* Espaço para o menu lateral */
+            padding: 20px;
+            padding-top: 80px;
+        }
+
+        .container {
+            max-width: 800px;
+           
+            margin: auto;
+            background: #fff; /* Fundo branco para o conteúdo */
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #594EF8; /* Purple */
+            font-size: 2em;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #555; /* Darker gray for text */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            nav a {
+                text-align: center;
+                padding: 10px;
+                font-size: 1em;
+            }
+
+            main {
+                margin-left: 0;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="/static/slim.png" alt="Logo" class="logo">
+</header>
+
+<nav>
+    <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+    <a href="{{ url_for('register') }}"><i class="fas fa-user-plus"></i> Registrar</a>
+    <a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <a href="{{ url_for('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</nav>
+
+<main>
+    <div class="container">
+        <h2>Bem-vindo ao DropSlim 3D</h2>
+        <p>DropBox intranet.</p>
+        <p><i class="fas fa-info-circle"></i> Sinta-se à vontade para explorar a nossa plataforma!</p>
+    </div>
+</main>
+
+</body>
+</html>
