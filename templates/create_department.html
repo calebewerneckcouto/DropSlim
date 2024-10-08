@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Create Department{% endblock %}
+
+{% block content %}
+<h1>Create a New Department</h1>
+
+<!-- Form to create a new department -->
+<form method="POST">
+    <div class="form-group">
+        <label for="name">Department Name:</label>
+        <input type="text" class="form-control" name="name" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Department</button>
+</form>
+
+<!-- Table to list existing departments -->
+<h2>Existing Departments</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Department Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for department in departments %}
+        <tr id="row-{{ department.id }}">
+            <td>{{ department.id }}</td>
+            <td>
+                <span class="dept-name" id="name-{{ department.id }}">{{ department.name }}</span>
+                <input type="text" class="form-control edit-input" id="input-{{ department.id }}" value="{{ department.name }}" style="display: none;">
+            </td>
+            <td>
+                <button class="btn btn-warning btn-sm edit-btn" data-id="{{ department.id }}">Edit</button>
+                <button class="btn btn-success btn-sm save-btn" data-id="{{ department.id }}" style="display: none;">Save</button>
+                <form action="{{ url_for('delete_department', id=department.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this department?');">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- JavaScript for inline editing -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editButtons = document.querySelectorAll('.edit-btn');
+        const saveButtons = document.querySelectorAll('.save-btn');
+    
+        editButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                document.getElementById(`name-${id}`).style.display = 'none'; // Hide the current name
+                document.getElementById(`input-${id}`).style.display = 'block'; // Show the input
+                this.style.display = 'none'; // Hide the edit button
+                document.querySelector(`.save-btn[data-id="${id}"]`).style.display = 'inline-block'; // Show the save button
+            });
+        });
+    
+        saveButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const newName = document.getElementById(`input-${id}`).value;
+    
+                // AJAX request to update the department name
+                fetch(`/edit_department/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: newName })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Update the displayed name
+                        document.getElementById(`name-${id}`).innerText = newName;
+                        document.getElementById(`name-${id}`).style.display = 'block'; // Show the updated name
+                        document.getElementById(`input-${id}`).style.display = 'none'; // Hide the input
+                        this.style.display = 'none'; // Hide the save button
+                        document.querySelector(`.edit-btn[data-id="${id}"]`).style.display = 'inline-block'; // Show the edit button
+                    } else {
+                        alert('Error updating department name.');
+                    }
+                });
+            });
+        });
+    });
+    </script>
+    
+
+{% endblock %}
