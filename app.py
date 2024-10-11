@@ -22,7 +22,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limita a 16 MB
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'calebewerneck@gmail.com')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'your_email_password')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'yakg alds oqzf msnd')
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
@@ -160,10 +160,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/forgot_password', methods=['GET', 'POST'])
-def forgot_password():
-    # Logic for forgot password
-    return render_template('forgot_password.html')
+
 
 
 @app.route('/dashboard')
@@ -255,27 +252,33 @@ def change_password():
     
     return render_template('change_password.html')
 
-@app.route('/reset_password', methods=['GET', 'POST'])
-def reset_password():
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
     if request.method == 'POST':
         email = request.form['email']
         user = User.query.filter_by(email=email).first()
-
+        
         if user:
+            # Generate a new password
             new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-            user.password = generate_password_hash(new_password)
+            hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
+
+            # Update user's password in the database
+            user.password = hashed_password
             db.session.commit()
 
-            msg = Message('Sua nova senha', sender=app.config['MAIL_USERNAME'], recipients=[email])
-            msg.body = f'Sua nova senha é: {new_password}'
+            # Send email with new password
+            msg = Message("Nova Senha", sender=app.config['MAIL_USERNAME'], recipients=[email])
+            msg.body = f"Sua nova senha é: {new_password}\nPor favor, altere sua senha após fazer login."
             mail.send(msg)
 
-            flash('Nova senha enviada para seu email.', 'success')
+            flash('Uma nova senha foi enviada para o seu email.', 'success')
             return redirect(url_for('login'))
         else:
             flash('Email não encontrado.', 'danger')
 
-    return render_template('reset_password.html')
+    return render_template('forgot_password.html')
+
 
 if __name__ == '__main__':
     with app.app_context():

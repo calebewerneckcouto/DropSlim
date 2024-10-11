@@ -8,6 +8,6 @@ class Config:
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'calebewerneck@gmail.com')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'your_email_password')  # Use uma variável de ambiente
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'ukhu fpee aljp tuwn')  # Use uma variável de ambiente
     MAIL_USE_TLS = True
     MAIL_USE_SSL = False
