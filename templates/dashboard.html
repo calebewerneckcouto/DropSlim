@@ -58,6 +58,22 @@
             font-size: inherit;
             outline: none;
         }
+        /* Mensagens de Alerta */
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
         /* Responsividade */
         @media (max-width: 768px) {
             nav {
@@ -105,52 +121,60 @@
     </style>
 </head>
 <body>
+   
+    <header>
+        <h1>Gerenciador de Arquivos</h1>
+        <p>Usuário: {{ user_name }} | Departamento: {{ user_department }}</p>
+        <nav>
+            <a href="{{ url_for('upload_file') }}">Fazer Upload</a>
+            <a href="{{ url_for('file_list') }}">Lista de Arquivos</a>
+            {% if user_department in ['TI', 'DIRETORIA'] %}
+                <a href="{{ url_for('register') }}">Registrar</a>
+                <a href="{{ url_for('create_department') }}">Criar Departamento</a>
+            {% endif %}
+            <a href="{{ url_for('change_password') }}">Mudar Senha</a>
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </nav>
+    </header>
 
-<header>
-    <h1>Gerenciador de Arquivos</h1>
-    <p>Usuário: {{ user_name }} | Departamento: {{ user_department }}</p> <!-- Exibe o nome do usuário e o departamento -->
-    <nav>
-        <a href="{{ url_for('upload_file') }}">Fazer Upload</a>
-        <a href="{{ url_for('file_list') }}">Lista de Arquivos</a>
-        {% if user_department in ['TI', 'DIRETORIA'] %}
-            <a href="{{ url_for('register') }}">Register</a>
-        {% endif %}
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
 
-
-        {% if user_department in ['TI', 'DIRETORIA'] %}
-        <a href="{{ url_for('create_department') }}">Criar Departamento</a>
-         {% endif %}
-        <a href="{{ url_for('change_password') }}">Mudar Senha</a>
-        <a href="{{ url_for('logout') }}">Sair</a>
-    </nav>
-</header>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nome do Arquivo</th>
-            <th>Data do Upload</th>
-            <th>Descrição</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for file in files %}
-        <tr>
-            <td>
-                <a href="{{ url_for('uploaded_file', file_id=file.id) }}" target="_blank">{{ file.filename }}</a>
-            </td>
-            <td>{{ file.upload_date.strftime('%d/%m/%Y %H:%M') }}</td>
-            <td>{{ file.description }}</td>
-            <td>
-                <form action="{{ url_for('delete_file', file_id=file.id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="delete-button">Deletar</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome do Arquivo</th>
+                <th>Data do Upload</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('uploaded_file', file_id=file.id) }}" target="_blank">{{ file.filename }}</a>
+                </td>
+                <td>{{ file.upload_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ file.description }}</td>
+                <td>
+                    <form action="{{ url_for('delete_file', file_share_id=file.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="delete-button">Deletar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 </body>
 </html>

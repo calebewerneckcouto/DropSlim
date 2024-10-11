@@ -5,6 +5,17 @@
 {% block content %}
 <h1>Create a New Department</h1>
 
+<!-- Feedback Messages -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                {{ message }}<br>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
 <!-- Form to create a new department -->
 <form method="POST">
     <div class="form-group">
@@ -88,7 +99,6 @@
             });
         });
     });
-    </script>
-    
+</script>
 
 {% endblock %}

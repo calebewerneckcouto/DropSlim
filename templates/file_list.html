@@ -67,6 +67,29 @@
         .search {
             margin-bottom: 20px;
         }
+        .share-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        /* Mensagens de Alerta */
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -81,10 +104,51 @@
     </nav>
     <div class="container">
         <h2>Lista de Arquivos</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
         <form class="search" action="{{ url_for('file_list') }}" method="get">
             <input type="text" name="search" placeholder="Pesquisar descrição" required>
             <button type="submit" class="btn">Pesquisar</button>
         </form>
+
+        <div class="share-section">
+            <h3>Compartilhar Arquivo</h3>
+            <form action="{{ url_for('share_files') }}" method="post" onsubmit="return validateShareForm();">
+                <label for="file">Selecione o arquivo:</label>
+                <select name="file_id" required>
+                    {% for file in files %}
+                        <option value="{{ file.id }}">{{ file.filename }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="user_id">Compartilhar com Usuário:</label>
+                <select name="user_id" id="user_id" required onchange="showUserDepartment(this);">
+                    <option value="">Selecione um usuário</option>
+                    {% for user in all_users %}
+                        <option value="{{ user.id }}" data-department="{{ user.department.name }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+                <div id="user-department-info" style="margin-top: 5px;"></div>
+
+                <label for="department_id">Ou Compartilhar com Departamento:</label>
+                <select name="department_id" id="department_id" required>
+                    <option value="">Selecione um departamento</option>
+                    {% for department in all_departments %}
+                        <option value="{{ department.id }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="btn">Compartilhar</button>
+            </form>
+        </div>
+
         <table>
             <tr>
                 <th>Nome do Arquivo</th>
@@ -98,15 +162,47 @@
                 <td>{{ file.description }}</td>
                 <td>{{ file.upload_date.strftime('%d/%m/%Y %H:%M') }}</td>
                 <td>
-                    <form action="{{ url_for('delete_file', file_id=file.id) }}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Deletar</button>
-                    </form>
+                    {% if file.shared_with %}
+                        {% for user in file.shared_with %}
+                            {% if user.id == current_user.id or current_user.department_id in [1, 2] %}
+                                <form action="{{ url_for('delete_file', file_share_id=user.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
                     <a href="{{ url_for('uploaded_file', file_id=file.id) }}" class="btn">Baixar</a>
                 </td>
             </tr>
             {% endfor %}
         </table>
+        
         <a href="{{ url_for('dashboard') }}" class="btn">Voltar ao Painel</a>
     </div>
+
+    <script>
+        function validateShareForm() {
+            const userSelect = document.getElementById('user_id');
+            const departmentSelect = document.getElementById('department_id');
+            
+            if (!userSelect.value || !departmentSelect.value) {
+                alert('Por favor, selecione tanto um usuário quanto um departamento para compartilhar o arquivo.');
+                return false; // Impede o envio do formulário
+            }
+            return true; // Permite o envio do formulário
+        }
+
+        function showUserDepartment(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const departmentInfo = document.getElementById('user-department-info');
+
+            if (selectedOption.value) {
+                departmentInfo.innerText = `Departamento do usuário: ${selectedOption.dataset.department}`;
+            } else {
+                departmentInfo.innerText = '';
+            }
+        }
+    </script>
 </body>
 </html>
