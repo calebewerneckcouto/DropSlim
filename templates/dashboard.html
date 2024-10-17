@@ -36,9 +36,11 @@
             background-color: #D0D0D0;
         }
         .table {
-            width: 80%;
+            width: 100%;
+            max-width: 100%;
             margin: 20px auto;
             border-collapse: collapse;
+            overflow-x: auto;
         }
         .table th, .table td {
             border: 1px solid #dddddd;
@@ -103,6 +105,11 @@
             }
             .table td {
                 font-size: 0.8em;
+            }
+            .table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
             }
         }
         .change-password-button {
